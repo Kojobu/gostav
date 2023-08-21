@@ -62,7 +62,7 @@ func mensa_scrap(debug bool) string {
 	} else {
 
 		c.OnHTML(".mensa-carousel-wrapper-2", func(e *colly.HTMLElement) {
-			if page == 1 {
+			if page == 2 {
 				food := Food{}
 				text := e.Text
 				text = strings.TrimSpace(text)
