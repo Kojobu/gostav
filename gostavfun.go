@@ -31,62 +31,44 @@ func mensa_scrap(debug bool) string {
 	date := []string{}
 	meal := []string{}
 
-	if debug {
-
-		c.OnResponse(func(r *colly.Response) {
-			fmt.Println(r.StatusCode)
-		})
-
-		c.OnRequest(func(r *colly.Request) {
-			fmt.Println("Visiting", r.URL)
-		})
-
-		c.OnHTML(".mensa-carousel-wrapper-2", func(e *colly.HTMLElement) {
-			if page == 2 {
-				text := e.Text
-				text = strings.TrimSpace(text)
-				text = strings.Replace(text, "\t", "", -1)
-				scanner := bufio.NewScanner(strings.NewReader(text))
-				scanner.Text()
-
-				for scanner.Scan() {
-					fmt.Println(line_date, ":\t", scanner.Text())
-					line_date++
+	c.OnHTML(".mensa-carousel-wrapper-2", func(e *colly.HTMLElement) {
+		if page == 2 {
+			food := Food{}
+			text := e.Text
+			text = strings.TrimSpace(text)
+			text = strings.Replace(text, "\t", "", -1)
+			//text = strings.Replace(text, "", "", -1)
+			scanner := bufio.NewScanner(strings.NewReader(text))
+			line := 0
+			for scanner.Scan() {
+				if debug {
+					fmt.Println(line, ":\t", scanner.Text())
+					line++
 				}
-
-			}
-
-			page++
-		})
-
-	} else {
-
-		c.OnHTML(".mensa-carousel-wrapper-2", func(e *colly.HTMLElement) {
-			if page == 2 {
-				food := Food{}
-				text := e.Text
-				text = strings.TrimSpace(text)
-				text = strings.Replace(text, "\t", "", -1)
-				scanner := bufio.NewScanner(strings.NewReader(text))
-				scanner.Text()
-
-				for scanner.Scan() {
-					if line_date%50 == 0 {
+				if line_date%50 == 0 {
+					if strings.Replace(scanner.Text(), "\n", "", -1) == "" {
+						line_date--
+					} else {
 						food.date = scanner.Text()
 						date = append(date, food.date)
 					}
-					if line_meal%50 == 0 {
+				}
+				if line_meal%50 == 0 {
+					if strings.Replace(scanner.Text(), "\n", "", -1) == "" {
+						line_meal--
+					} else {
 						food.meal = scanner.Text()
 						meal = append(meal, food.meal)
 					}
 
-					line_date++
-					line_meal++
 				}
+
+				line_date++
+				line_meal++
 			}
-			page++
-		})
-	}
+		}
+		page++
+	})
 
 	c.Visit("https://www.studentenwerk.uni-heidelberg.de/de/speiseplan_neu")
 
@@ -97,6 +79,7 @@ func mensa_scrap(debug bool) string {
 		returnstring += "\n"
 		returnstring += meal[i]
 		returnstring += "\n\n"
+
 	}
 
 	return returnstring
@@ -158,4 +141,8 @@ func terminal2(prog string, passw string) string {
 		return "Wrong password."
 	}
 
+}
+
+func impressum() string {
+	return "Code by Tom Schlenker https://github.com/Kojobu/gostav/"
 }
