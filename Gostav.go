@@ -13,7 +13,7 @@ import (
 // Bot parameters
 var (
 	GuildID        = flag.String("guild", "", "Test guild ID. If not passed - bot registers commands globally")
-	BotToken       = flag.String("token", "", "Bot access token")
+	BotToken       = flag.String("token", "YOUR TOKEN", "Bot access token")
 	RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
 )
 
@@ -22,6 +22,7 @@ var s *discordgo.Session
 func init() { flag.Parse() }
 
 func init() {
+
 	var err error
 	s, err = discordgo.New("Bot " + *BotToken)
 	if err != nil {
@@ -38,6 +39,11 @@ var (
 		{
 			Name:        "mensa",
 			Description: "Yields the menu of the Mensa INF 306.",
+		},
+
+		{
+			Name:        "impressum",
+			Description: "Reveals the src code and its coder.",
 		},
 
 		{
@@ -74,6 +80,11 @@ var (
 		{
 			Name:        "basic-command-with-files",
 			Description: "Basic command with files",
+		},
+
+		{
+			Name:        "b-field",
+			Description: "Plot the local magnetic field of my room.",
 		},
 	}
 
@@ -147,6 +158,15 @@ var (
 			})
 		},
 
+		"impressum": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: impressum(),
+				},
+			})
+		},
+
 		"basic-command-with-files": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -157,6 +177,20 @@ var (
 							ContentType: "text/plain",
 							Name:        "test.txt",
 							Reader:      strings.NewReader("Hello Discord!!"),
+						},
+					},
+				},
+			})
+		},
+
+		"b-field": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "Here's the local B-field of my room:",
+					Embeds: []*discordgo.MessageEmbed{
+						{
+							Image: &discordgo.MessageEmbedImage{URL: "PATH/plot.png"},
 						},
 					},
 				},
