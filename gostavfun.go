@@ -146,3 +146,13 @@ func terminal2(prog string, passw string) string {
 func impressum() string {
 	return "Code by Tom Schlenker https://github.com/Kojobu/gostav/"
 }
+
+func b_plot(path string) string {
+	cmdStruct := exec.Command("julia", "/home/potato/Documents/projects/gostav/plot.jl", path)
+	_, err := cmdStruct.Output()
+
+	if err != nil {
+		return err.Error()
+	}
+	return "/home/potato/Documents/projects/gostav/plot.png"
+}
