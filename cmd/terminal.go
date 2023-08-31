@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"log"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func TerminalHander(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	log.Printf("NAME: %s ID: %s COMMAND: %s", i.User.Username, i.User.ID, "terminal")
 	options := i.ApplicationCommandData().Options
 
 	optionMap := make(map[string]*discordgo.ApplicationCommandInteractionDataOption, len(options))
