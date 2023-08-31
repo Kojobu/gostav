@@ -9,7 +9,7 @@ import (
 
 func LongRunningHandler(sesseion *discordgo.Session, interaction *discordgo.InteractionCreate) {
 	//log user interaction: NAME: <username>#<discriminator> ID: <user id> COMMAND: <command name>
-	log.Printf("NAME: %s#%s ID: %s COMMAND: %s", interaction.User.Username, interaction.User.Discriminator, interaction.User.ID, interaction.Data.Name)
+	log.Printf("NAME: %s ID: %s COMMAND: %s", interaction.User.Username, interaction.User.ID, "long")
 	sesseion.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
 	})
