@@ -16,6 +16,6 @@ func LongRunningHandler(sesseion *discordgo.Session, interaction *discordgo.Inte
 	time.Sleep(10 * time.Second)
 
 	sesseion.FollowupMessageCreate(interaction.Interaction, true, &discordgo.WebhookParams{
-		Content: "Done! this took 10 seconds",
+		Content: "Pretend this is an Image of some b-field thingy",
 	})
 }
