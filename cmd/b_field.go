@@ -2,14 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func BFieldHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	log.Printf("NAME: %s ID: %s COMMAND: %s", i.User.Username, i.User.ID, "b-field")
+	//log.Printf("NAME: %s ID: %s COMMAND: %s", i.User.Username, i.User.ID, "b-field")
 	dat_path := "/home/potato/Documents/sensorsave.dat"
 	img_path := b_plot(dat_path)
 	f, err := os.Open(img_path)
