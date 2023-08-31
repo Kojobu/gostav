@@ -53,4 +53,8 @@ var all_commands []*discordgo.ApplicationCommand = []*discordgo.ApplicationComma
 		Name:        "b-field",
 		Description: "Plot the local magnetic field of my room.",
 	},
+	{
+		Name:        "long",
+		Description: "Long Running Command to see how it handles",
+	},
 }

@@ -13,4 +13,5 @@ var all_handlers map[string]func(s *discordgo.Session, i *discordgo.InteractionC
 	"impressum":                cmd.ImpressumHandler,
 	"basic-command-with-files": cmd.BasicFileHander,
 	"b-field":                  cmd.BFieldHandler,
+	"long":                     cmd.LongRunningHandler,
 }
