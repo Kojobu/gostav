@@ -40,7 +40,6 @@ function plt(x::Vector{Float64},y::Vector{Float64})
     # Display and save the plot
 
     savefig(plot_object, "plot.png")  # Adjust the filename and format as needed
-    return 0
 end
 
 x,y = load(ARGS[1])
