@@ -1,86 +1,50 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os/exec"
-	"strings"
+	"time"
+
+
 
 	"github.com/gocolly/colly"
 )
 
-func mensa_scrap(debug bool) string {
-
-	type Food struct {
-		date string
-		meal string
-	}
+func mensa_scrap(days int) string {
 
 	c := colly.NewCollector(
 	//colly.AllowedDomains("studentenwerk.uni-heidelberg.de"),
 	)
 
-	page := 0
-	line_date := 0
-	line_meal := 5
-
-	date := []string{}
-	meal := []string{}
-
-	c.OnHTML(".mensa-carousel-wrapper-2", func(e *colly.HTMLElement) {
-		if page == 2 {
-			food := Food{}
-			text := e.Text
-			text = strings.TrimSpace(text)
-			text = strings.Replace(text, "\t", "", -1)
-			//text = strings.Replace(text, "", "", -1)
-			scanner := bufio.NewScanner(strings.NewReader(text))
-			line := 0
-			for scanner.Scan() {
-				if debug {
-					fmt.Println(line, ":\t", scanner.Text())
-					line++
-				}
-				if line_date%50 == 0 {
-					if strings.Replace(scanner.Text(), "\n", "", -1) == "" {
-						line_date--
-					} else {
-						food.date = scanner.Text()
-						date = append(date, food.date)
-					}
-				}
-				if line_meal%50 == 0 {
-					if strings.Replace(scanner.Text(), "\n", "", -1) == "" {
-						line_meal--
-					} else {
-						food.meal = scanner.Text()
-						meal = append(meal, food.meal)
-					}
-
-				}
-
-				line_date++
-				line_meal++
+	type Food struct {
+		date []string
+		meal []string
+	}
+	food := Food{}
+	c.OnHTML("table", func(e *colly.HTMLElement){
+		found_food := false
+		e.ForEach("tr", func(i int, el *colly.HTMLElement) {
+			//fmt.Println(i, el.Text)
+			if i == 7 {
+				food.meal = append(food.meal, el.ChildText("td:nth-child(1)"))
+				found_food = !found_food
 			}
+		})
+		if !found_food {
+			food.meal = append(food.meal, "Die Mensa ist an diesem Tag geschlossen.")
 		}
-		page++
 	})
 
-	c.Visit("https://www.studentenwerk.uni-heidelberg.de/de/speiseplan_neu")
-
 	returnstring := ""
-
-	for i := 0; i < 3; i++ {
-		returnstring += date[i]
-		returnstring += "\n"
-		returnstring += meal[i]
-		returnstring += "\n\n"
-
+	for i := 0; i<days; i++ {
+		food.date = append(food.date, time.Now().AddDate(0,0,i).Format("02.01.2006"))
+		c.Visit("https://www.stw.uni-heidelberg.de/external-tools/speiseplan/speiseplan.php?lang=de&mode=Mensa+Im+Neuenheimer+Feld+304&date=" + food.date[i])
+		returnstring += food.date[i] + "\n"
+		returnstring += food.meal[i] + "\n\n"
 	}
 
 	return returnstring
-
-}
+}	
 
 func ozon_scrap(debug bool) string {
 

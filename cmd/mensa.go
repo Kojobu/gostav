@@ -9,7 +9,7 @@ func MensaHander(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: mensa_scrap(false),
+			Content: mensa_scrap(3),
 		},
 	})
 }
