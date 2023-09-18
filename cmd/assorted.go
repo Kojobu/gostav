@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"os/exec"
 	"time"
+	"net/http"
+	"io"
+	"encoding/json"
+	"strconv"
 
 
 
@@ -46,30 +50,75 @@ func mensa_scrap(days int) string {
 	return returnstring
 }	
 
-func ozon_scrap(debug bool) string {
+func ozon_scrap() string {
 
-	c := colly.NewCollector(
-		colly.AllowedDomains(""),
-	)
-
-	if debug {
-
-		c.OnHTML("title", func(e *colly.HTMLElement) {
-			fmt.Println(e.Text)
-		})
-
-		c.OnResponse(func(r *colly.Response) {
-			fmt.Println(r.StatusCode)
-		})
-
-		c.OnRequest(func(r *colly.Request) {
-			fmt.Println("Visiting", r.URL)
-		})
+	type Ozon struct {
+		Table struct {
+			Header []struct {
+				Label   string `json:"label"`
+				Abbr    string `json:"abbr"`
+				Options struct {
+					MinWidth            string `json:"minWidth"`
+					Align               string `json:"align"`
+					Sorting             bool   `json:"sorting"`
+					Highlighted         bool   `json:"highlighted"`
+					Template            string `json:"template"`
+					TemplateHighlighted string `json:"templateHighlighted"`
+				} `json:"options,omitempty"`
+				Tooltip  string `json:"tooltip,omitempty"`
+				Options0 struct {
+					Sorting  bool   `json:"sorting"`
+					DataType string `json:"dataType"`
+				} `json:"options,omitempty"`
+				SubHeaders []struct {
+					Label   string `json:"label"`
+					Abbr    string `json:"abbr"`
+					Options struct {
+						Align    string `json:"align"`
+						Sorting  bool   `json:"sorting"`
+						DataType string `json:"dataType"`
+						Limits   struct {
+							Warning float64 `json:"warning"`
+							Error   float64 `json:"error"`
+						} `json:"limits"`
+						Template string `json:"template"`
+					} `json:"options"`
+				} `json:"subHeaders,omitempty"`
+				Options1 struct {
+					Align   string `json:"align"`
+					Sorting bool   `json:"sorting"`
+				} `json:"options,omitempty"`
+				Options2 struct {
+					Align   string `json:"align"`
+					Sorting bool   `json:"sorting"`
+				} `json:"options,omitempty"`
+			} `json:"header"`
+			Data []struct {
+				Data       []any `json:"data"`
+				Parameters struct {
+					ID         string `json:"id"`
+					O3Measured bool   `json:"O3-measured"`
+				} `json:"parameters"`
+				Highlighted bool `json:"highlighted,omitempty"`
+			} `json:"data"`
+		} `json:"table"`
 	}
 
-	c.Visit("")
-
-	return ""
+	resp, err := http.Get("https://lupo-cloud.de/air-app/table?component=5&id=DEBW009")
+	if err != nil {
+		// handle err
+	}
+	var ozon Ozon
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	json.Unmarshal(body, &ozon)
+	ozon_hd := ozon.Table.Data[9].Data
+	returnstring := ""
+	returnstring += "Ozonvales for " + ozon_hd[0].(string) + " in [µg/m3]\n"
+	returnstring += "1h mean: " + strconv.FormatFloat(ozon_hd[1].(float64), 'f', -1, 64)+"\n"
+	returnstring += "1h max: " +  ozon_hd[2].(string) +"\n"
+	returnstring += "1h max (yesterday): " +  ozon_hd[3].(string)
+ 	return returnstring
 
 }
 

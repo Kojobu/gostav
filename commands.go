@@ -57,4 +57,8 @@ var all_commands []*discordgo.ApplicationCommand = []*discordgo.ApplicationComma
 		Name:        "long",
 		Description: "Long Running Command to see how it handles",
 	},
+	{
+		Name:        "ozon",
+		Description: "Returns the current ozon value for Heidelberg from the Landesanstalt für Umwelt Baden-Württemberg",
+	},
 }
